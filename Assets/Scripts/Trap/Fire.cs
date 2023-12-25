@@ -1,13 +1,11 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Fire : MonoBehaviour 
+public class Fire : MonoBehaviour
 {
     private Animator anim;
-    bool isPlayer = false;
-
+    private bool playerIsInFire = false; // Biến theo dõi trạng thái người chơi trong lửa
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -17,40 +15,35 @@ public class Fire : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            // Lấy tham chiếu đến script PlayerLife từ đối tượng Player
             PlayerLife playerLife = other.gameObject.GetComponent<PlayerLife>();
-
-            // Kiểm tra nếu tham chiếu không null trước khi gọi hàm Die
-            if (playerLife != null)
+            StartCoroutine(DelayFire(2f));
+            if (playerIsInFire)
             {
-                StartCoroutine(DelayFire(1f, playerLife));
+                playerLife.Die();
+                CheckAnim();
             }
         }
     }
- 
-    IEnumerator DelayFire(float delay, PlayerLife playerLife)
+
+    void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            playerIsInFire = false;
+        }
+    }
+
+    IEnumerator DelayFire(float delay)
     {
         yield return new WaitForSeconds(delay);
-
-        // isPlayer = true;
-        // playerLife.Die();
-        // CheckAnim();
-
-         if (isPlayer)
-        {
-            playerLife.Die();
-        }
-
-        isPlayer = !isPlayer;
         CheckAnim();
+        playerIsInFire = true;
 
-        yield return new WaitForSeconds(delay);
-        isPlayer = false;
-        CheckAnim();
+
     }
 
     void CheckAnim()
     {
-        anim.SetBool("fire", isPlayer);
+        anim.SetBool("fire", true);
     }
 }

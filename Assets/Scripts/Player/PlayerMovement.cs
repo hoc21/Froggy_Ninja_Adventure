@@ -19,7 +19,7 @@ public class PlayerMovement : MonoBehaviour
     private enum MovementState { idle,running,jumpping,falling}
     private MovementState state = MovementState.idle;
 
-
+    public bool isJumping = false;
     public Enemy enemy1;
 
     void Start()
@@ -36,13 +36,18 @@ public class PlayerMovement : MonoBehaviour
     {
         dirX = Input.GetAxisRaw("Horizontal");
         rb.velocity = new Vector2(dirX * moveSpeed,rb.velocity.y);
-        if (Input.GetButtonDown("Jump") && jumpsRemaining > 0)
+        if (Input.GetButtonDown("Jump") && jumpsRemaining > 0 )
         {
             jumpSoundEffect.Play();
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             jumpsRemaining--;
-        }  
+            isJumping = true;
+        }else if(jumpsRemaining == 2){
+            isJumping = false;
+        }
+        
         UpdateAnimationUpdate(); 
+        Debug.Log(jumpsRemaining);
     }
     private void UpdateAnimationUpdate()
     {
@@ -111,21 +116,23 @@ public class PlayerMovement : MonoBehaviour
         }
         if(other.gameObject.CompareTag("Enemy"))
         {
-            if(state == MovementState.falling)
+            if(isJumping)
             {
                 DieEnemy(other.gameObject);
+                Debug.Log("123");
             }
-            // else
-            // {
-            //     if (other.gameObject.transform.position.x > transform.position.x)
-            //     {
-            //         rb.velocity = new Vector2(-hurtForce, rb.velocity.y);
-            //     }
-            //     else
-            //     {
-            //         rb.velocity = new Vector2(hurtForce, rb.velocity.y);
-            //     }
-            // }
+            else
+            {
+                Debug.Log("456");
+                if (other.gameObject.transform.position.x > transform.position.x)
+                {
+                    rb.velocity = new Vector2(-hurtForce, rb.velocity.y);
+                }
+                else
+                {
+                    rb.velocity = new Vector2(hurtForce, rb.velocity.y);
+                }
+            }
         }
     }
     void DieEnemy(GameObject enemy){
