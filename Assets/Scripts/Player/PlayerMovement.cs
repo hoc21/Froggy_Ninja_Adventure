@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    private PlayerLife player;
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer sprite;
@@ -13,14 +14,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]private float moveSpeed = 7f;
     [SerializeField]private float jumpForce = 7f;
     [SerializeField] private AudioSource jumpSoundEffect;
-    public float hurtForce = 10f;
     private int jumpsRemaining = 2; // Số lần nhảy được phép
-
+    public bool isJumping = false;
+    [SerializeField] private HealthBar healthBar;
+    public float knockbackForce = 5f;
     private enum MovementState { idle,running,jumpping,falling}
     private MovementState state = MovementState.idle;
-
-    public bool isJumping = false;
-    public Enemy enemy1;
 
     void Start()
     {
@@ -28,8 +27,7 @@ public class PlayerMovement : MonoBehaviour
         anim = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
         coll = GetComponent<BoxCollider2D>();
-        //Enemy enemy = other.gameObject.GetComponent<Enemy>();
-
+        player = GetComponent<PlayerLife>();
     }
 
     void Update()
@@ -45,9 +43,7 @@ public class PlayerMovement : MonoBehaviour
         }else if(jumpsRemaining == 2){
             isJumping = false;
         }
-        
         UpdateAnimationUpdate(); 
-        Debug.Log(jumpsRemaining);
     }
     private void UpdateAnimationUpdate()
     {
@@ -119,23 +115,35 @@ public class PlayerMovement : MonoBehaviour
             if(isJumping)
             {
                 DieEnemy(other.gameObject);
-                Debug.Log("123");
             }
             else
             {
-                Debug.Log("456");
-                if (other.gameObject.transform.position.x > transform.position.x)
-                {
-                    rb.velocity = new Vector2(-hurtForce, rb.velocity.y);
-                }
-                else
-                {
-                    rb.velocity = new Vector2(hurtForce, rb.velocity.y);
-                }
+                anim.SetTrigger("hurt");
+                HandleHealth();
+                Vector2 knockbackDirection = new Vector2(other.contacts[0].point.x > transform.position.x ? -1 : 1, 1).normalized;
+                rb.velocity = Vector2.zero;
+                rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
             }
         }
     }
     void DieEnemy(GameObject enemy){
         enemy.GetComponent<Enemy>().JumpedOn();
+    }
+    private void HandleHealth()
+    {
+        healthBar.Damage(0.1f);
+        if (Health.totalHealth > 0f)
+        {
+            StartCoroutine(ReturnToIdle());
+        }
+            else
+            {    
+                player.Die();
+            }
+    }
+    IEnumerator ReturnToIdle()
+    {
+        yield return new WaitForSeconds(0.5f);
+        anim.SetTrigger("idle");
     }
 }

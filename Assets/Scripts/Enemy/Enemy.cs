@@ -21,8 +21,6 @@ public class Enemy : MonoBehaviour
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Kinematic;
         GetComponent<Collider2D>().enabled = false;
-        Debug.Log("a");
-        // Console
     }
     private void Death()
     {

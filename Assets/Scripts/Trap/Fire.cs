@@ -38,8 +38,6 @@ public class Fire : MonoBehaviour
         yield return new WaitForSeconds(delay);
         CheckAnim();
         playerIsInFire = true;
-
-
     }
 
     void CheckAnim()

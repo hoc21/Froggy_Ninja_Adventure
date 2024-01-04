@@ -24,10 +24,8 @@ public class PlayerLife : MonoBehaviour
         {
 
             healthBar.Damage(0.1f);
-            // Kiểm tra xem player còn máu không
             if (Health.totalHealth > 0f)
             {
-                // Nếu còn máu, thực hiện lực đẩy sang hai bên
                 Vector2 knockbackDirection = new Vector2(other.contacts[0].point.x > transform.position.x ? -1 : 1, 1).normalized;
                 rb.velocity = Vector2.zero; // Đặt vận tốc về 0 trước khi áp dụng lực đẩy
                 rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
