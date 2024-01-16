@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     public bool isJumping = false;
     [SerializeField] private HealthBar healthBar;
     public float knockbackForce = 5f;
+    public Vector3 respawnPoint;
     private enum MovementState { idle,running,jumpping,falling}
     private MovementState state = MovementState.idle;
 
@@ -28,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
         coll = GetComponent<BoxCollider2D>();
         player = GetComponent<PlayerLife>();
+        respawnPoint = transform.position;
     }
 
     void Update()
@@ -95,6 +97,11 @@ public class PlayerMovement : MonoBehaviour
             GetComponent<SpriteRenderer>().color = Color.blue;
             StartCoroutine(ResetPower());
         }
+        if(other.CompareTag("CheckPoint"))
+        {
+            respawnPoint = transform.position;
+            Debug.Log("Checkpoint reached. Respawn point set to: " + respawnPoint);
+        }
     }
 
     private IEnumerator ResetPower()
@@ -118,7 +125,6 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                anim.SetTrigger("hurt");
                 HandleHealth();
                 Vector2 knockbackDirection = new Vector2(other.contacts[0].point.x > transform.position.x ? -1 : 1, 1).normalized;
                 rb.velocity = Vector2.zero;
@@ -126,12 +132,14 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
-    void DieEnemy(GameObject enemy){
+    void DieEnemy(GameObject enemy)
+    {
         enemy.GetComponent<Enemy>().JumpedOn();
     }
     private void HandleHealth()
     {
         healthBar.Damage(0.1f);
+        anim.SetTrigger("hurt");
         if (Health.totalHealth > 0f)
         {
             StartCoroutine(ReturnToIdle());

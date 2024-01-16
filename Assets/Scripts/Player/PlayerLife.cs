@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerLife : MonoBehaviour
 {
+    private PlayerMovement playerMovement;
     private Animator anim;
     private Rigidbody2D rb;
     [SerializeField] private AudioSource deadSoundEffect;
@@ -16,13 +17,13 @@ public class PlayerLife : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        playerMovement = GetComponent<PlayerMovement>();
     }
 
     void OnCollisionEnter2D(Collision2D other)
     {
         if(other.gameObject.CompareTag("Trap"))
         {
-
             healthBar.Damage(0.1f);
             if (Health.totalHealth > 0f)
             {
@@ -56,10 +57,13 @@ public class PlayerLife : MonoBehaviour
         anim.SetTrigger("idle");
     }
 
-    void RestartLevel()
+    public void RestartLevel()
     {
+        Debug.Log("Current position: " + transform.position);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         Health.totalHealth = initialMaxHealth;
         healthBar.SetSize(initialMaxHealth);
+        transform.position = playerMovement.respawnPoint;
+        Debug.Log("New position: " + transform.position);
     }
 }

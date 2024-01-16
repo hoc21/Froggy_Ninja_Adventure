@@ -30,11 +30,8 @@ public class Fan : MonoBehaviour
 
     void ApplyUpwardForce(Rigidbody2D playerRb)
     {
-        // Tạo lực đẩy lên
         Vector2 upwardVector = new Vector2(0f, upwardForce);
-        
-        // Áp dụng lực đẩy lên cho nhân vật
-        playerRb.velocity = Vector2.zero; // Đặt vận tốc về 0 trước khi áp dụng lực mới
+        playerRb.velocity = Vector2.zero;
         playerRb.AddForce(upwardVector, ForceMode2D.Impulse);
     }
 }
