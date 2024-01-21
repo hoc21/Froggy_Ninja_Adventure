@@ -29,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
         coll = GetComponent<BoxCollider2D>();
         player = GetComponent<PlayerLife>();
-        respawnPoint = transform.position;
+        //respawnPoint = transform.position;
     }
 
     void Update()
