@@ -142,16 +142,12 @@ public class PlayerMovement : MonoBehaviour
         anim.SetTrigger("hurt");
         if (Health.totalHealth > 0f)
         {
-            StartCoroutine(ReturnToIdle());
+
+            anim.SetTrigger("idle");    
         }
             else
-            {    
+            {     
                 player.Die();
             }
-    }
-    IEnumerator ReturnToIdle()
-    {
-        yield return new WaitForSeconds(0.5f);
-        anim.SetTrigger("idle");
     }
 }

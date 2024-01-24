@@ -31,7 +31,7 @@ public class PlayerLife : MonoBehaviour
                 rb.velocity = Vector2.zero; // Đặt vận tốc về 0 trước khi áp dụng lực đẩy
                 rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
                 anim.SetTrigger("hurt");
-                StartCoroutine(ReturnToIdle());
+                anim.SetTrigger("idle");
             }
             else
             {    
@@ -51,19 +51,27 @@ public class PlayerLife : MonoBehaviour
         anim.SetTrigger("dead");
     }
 
-    IEnumerator ReturnToIdle()
-    {
-        yield return new WaitForSeconds(0.5f);
-        anim.SetTrigger("idle");
-    }
+public void RestartLevel()
+{
+    Debug.Log("Restarting level...");
 
-    public void RestartLevel()
-    {
-        Debug.Log("Current position: " + transform.position);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        Health.totalHealth = initialMaxHealth;
-        healthBar.SetSize(initialMaxHealth);
-        transform.position = playerMovement.respawnPoint;
-        Debug.Log("New position: " + transform.position);
-    }
+    // In giá trị hiện tại của respawnPoint
+    Debug.Log("Current respawn point: " + playerMovement.respawnPoint);
+
+    // Cập nhật vị trí checkpoint trước khi tải lại cảnh
+    transform.position = playerMovement.respawnPoint;
+
+    // In giá trị mới của vị trí người chơi
+    Debug.Log("New position: " + transform.position);
+
+    // Tải lại cảnh
+    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+    // Reset thông tin khác cần thiết (ví dụ: điều trị máu)
+    Health.totalHealth = initialMaxHealth;
+    healthBar.SetSize(initialMaxHealth);
+
+    Debug.Log("Level restarted!");
+}
+
 }
